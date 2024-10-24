@@ -1,11 +1,11 @@
 package gxn210004;
 
 /** Timer class for roughly calculating running time of programs
+ *  @author rbk
  *  Usage:  Timer timer = new Timer();
  *          timer.start();
  *          timer.end();
  *          System.out.println(timer);  // output statistics
- *  @author rbk
  */
 public class Timer {
 

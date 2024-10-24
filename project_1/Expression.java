@@ -195,20 +195,14 @@ public class Expression {
             } else if (token.token == TokenType.OPEN) {
                 operator.push(token);
             } else if (token.token == TokenType.CLOSE) {
-                while (
-                    !operator.isEmpty() &&
-                    operator.peek().token != TokenType.OPEN
-                ) {
+                while (!operator.isEmpty() && operator.peek().token != TokenType.OPEN) {
                     Expression right = stack.pop();
                     Expression left = stack.pop();
                     stack.push(new Expression(operator.pop(), left, right));
                 }
                 operator.pop();
             } else {
-                while (
-                    !operator.isEmpty() &&
-                    operator.peek().priority >= token.priority
-                ) {
+                while (!operator.isEmpty() && operator.peek().priority >= token.priority) {
                     Expression right = stack.pop();
                     Expression left = stack.pop();
                     stack.push(new Expression(operator.pop(), left, right));
@@ -243,16 +237,12 @@ public class Expression {
             } else if (token.token == TokenType.OPEN) {
                 stack.push(token);
             } else if (token.token == TokenType.CLOSE) {
-                while (
-                    !stack.isEmpty() && stack.peek().token != TokenType.OPEN
-                ) {
+                while (!stack.isEmpty() && stack.peek().token != TokenType.OPEN) {
                     output.add(stack.pop());
                 }
                 stack.pop();
             } else {
-                while (
-                    !stack.isEmpty() && stack.peek().priority >= token.priority
-                ) {
+                while (!stack.isEmpty() && stack.peek().priority >= token.priority) {
                     output.add(stack.pop());
                 }
                 stack.push(token);
@@ -302,6 +292,8 @@ public class Expression {
                         break;
                     case POWER:
                         stack.push((long) Math.pow(left, right));
+                        break;
+                    default:
                         break;
                 }
             }
@@ -370,9 +362,7 @@ public class Expression {
                 System.out.println("Postfix expression: " + post);
                 long pval = evaluatePostfix(post);
                 long eval = evaluateExpression(exp);
-                System.out.println(
-                    "Postfix eval: " + pval + " Exp eval: " + eval + "\n"
-                );
+                System.out.println("Postfix eval: " + pval + " Exp eval: " + eval + "\n");
             }
         }
     }

@@ -12,7 +12,6 @@ public class AVLTreeDriver {
 
     /**
      * Main method to test AVL tree implementation.
-     *
      * @param args command line arguments
      * @throws FileNotFoundException if the file is not found
      */
@@ -30,6 +29,7 @@ public class AVLTreeDriver {
         long result = 0;
         boolean VERIFY = true;
         AVLTree<Long> avlTree = new AVLTree<>();
+        // Initialize the timer
         Timer timer = new Timer();
 
         while (!((operation = sc.next()).equals("End"))) {
@@ -38,9 +38,7 @@ public class AVLTreeDriver {
                     operand = sc.nextLong();
                     if (avlTree.add(operand)) {
                         result = (result + 1) % modValue;
-                        if (VERIFY && !avlTree.verify()) {
-                            System.out.println("Invalid AVL tree ");
-                        }
+                        if (VERIFY && !avlTree.verify()) System.out.println("Invalid AVL tree ");
                     }
                     break;
                 }
@@ -62,8 +60,9 @@ public class AVLTreeDriver {
             }
         }
 
-        sc.close();
+        // End Time
         timer.end();
+        sc.close();
 
         System.out.println(result);
         System.out.println("Is valid AVL tree? " + avlTree.verify());

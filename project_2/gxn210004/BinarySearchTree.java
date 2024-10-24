@@ -65,6 +65,13 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Iterab
         return false;
     }
 
+    /**
+     * Creates a new node with the class-specific type.
+     * @param x element of the node
+     * @param left left child of the node
+     * @param right right child of the node
+     * @return the new node
+     */
     public Entry<T> createEntry(T x, Entry<T> left, Entry<T> right) {
         return new Entry<>(x, left, right);
     }
