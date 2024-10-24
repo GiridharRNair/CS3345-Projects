@@ -40,7 +40,6 @@ public class AVLTreeDriver {
                         result = (result + 1) % modValue;
                         if (VERIFY && !avlTree.verify()) {
                             System.out.println("Invalid AVL tree ");
-                            avlTree.printTree();
                         }
                     }
                     break;

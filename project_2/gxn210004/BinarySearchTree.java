@@ -184,6 +184,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Iterab
     }
 
     // Optional: Create an array with the elements using in-order traversal of tree
+    @SuppressWarnings("rawtypes")
     public Comparable[] toArray() {
         Comparable[] arr = new Comparable[size];
         /* write code to place elements in array here */

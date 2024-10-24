@@ -1,3 +1,6 @@
+// npx prettier . --write 
+// javac gxn210004/AVLTreeDriver.java 
+
 package gxn210004;
 
 public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
@@ -8,7 +11,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 
         Entry(T x, Entry<T> left, Entry<T> right) {
             super(x, left, right);
-            height = 0;
+            height = 0; //test change
         }
     }
 
@@ -29,57 +32,70 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
     @Override
     public boolean add(T x) {
         if (super.add(x)) {
-            root = balanceTree((Entry<T>) root, x);
+            root = rebalance((Entry<T>) root);
             return true;
         }
         return false;
     }
 
-    private Entry<T> balanceTree(Entry<T> node, T x) {
+    private Entry<T> rebalance(Entry<T> node) {
+        if (node == null) return null;
+        
+        // First rebalance children
+        node.left = rebalance((Entry<T>) node.left);
+        node.right = rebalance((Entry<T>) node.right);
+
         updateHeight(node);
         int balance = getBalance(node);
-
+    
+        // Left Heavy
         if (balance > 1) {
-            if (x.compareTo(node.left.element) < 0) {
+            if (getBalance((Entry<T>) node.left) >= 0) {
+                // Left-Left case
                 return rightRotate(node);
             } else {
+                // Left-Right case
                 node.left = leftRotate((Entry<T>) node.left);
                 return rightRotate(node);
             }
         }
-
+    
+        // Right Heavy
         if (balance < -1) {
-            if (x.compareTo(node.right.element) > 0) {
+            if (getBalance((Entry<T>) node.right) <= 0) {
+                // Right-Right case
                 return leftRotate(node);
             } else {
+                // Right-Left case
                 node.right = rightRotate((Entry<T>) node.right);
                 return leftRotate(node);
             }
         }
-
+    
+        // No balancing needed
         return node;
+    }    
+    
+
+    private int getHeight(Entry<T> node) {
+        return (node == null) ? -1 : node.height;
     }
 
     private void updateHeight(Entry<T> node) {
-        int leftHeight = (node.left == null) ? -1 : ((Entry<T>) node.left).height;
-        int rightHeight = (node.right == null) ? -1 : ((Entry<T>) node.right).height;
-        node.height = 1 + Math.max(leftHeight, rightHeight);
+        node.height = 1 +
+        Math.max(getHeight((Entry<T>) node.left), getHeight((Entry<T>) node.right));
     }
 
     private int getBalance(Entry<T> node) {
-        int leftHeight = (node.left == null) ? -1 : ((Entry<T>) node.left).height;
-        int rightHeight = (node.right == null) ? -1 : ((Entry<T>) node.right).height;
-        return leftHeight - rightHeight;
+        return getHeight((Entry<T>) node.left) - getHeight((Entry<T>) node.right);
     }
 
     private Entry<T> rightRotate(Entry<T> node) {
         Entry<T> newRoot = (Entry<T>) node.left;
         node.left = newRoot.right;
         newRoot.right = node;
-
         updateHeight(node);
         updateHeight(newRoot);
-
         return newRoot;
     }
 
@@ -87,17 +103,20 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
         Entry<T> newRoot = (Entry<T>) node.right;
         node.right = newRoot.left;
         newRoot.left = node;
-
         updateHeight(node);
         updateHeight(newRoot);
-
         return newRoot;
     }
 
     //Optional. Complete for extra credit
     @Override
     public T remove(T x) {
-        return super.remove(x);
+        T node = super.remove(x);
+        if (node != null) {
+            root = rebalance((Entry<T>) root);
+            return node;
+        }
+        return null;
     }
 
     /** TO DO
