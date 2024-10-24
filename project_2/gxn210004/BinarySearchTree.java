@@ -1,25 +1,32 @@
-/**
- * Name: Giridhar Nair
- * NetID: gxn210004
- * Date: 10/19/2024
- */
-
 package gxn210004;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Scanner;
-import java.util.Stack;
 
-public class BinarySearchTree<T extends Comparable<? super T>>
-    implements Iterable<T> {
+/**
+ * A binary search tree (BST) implementation
+ * @author Giridhar Nair
+ * @param <T> The type of elements stored in the tree.
+ */
+public class BinarySearchTree<T extends Comparable<? super T>> implements Iterable<T> {
 
+    /**
+     * Represents a node (entry) in the binary search tree.
+     * @param <T> Type of the element.
+     */
     static class Entry<T> {
 
         T element;
         Entry<T> left, right;
 
+        /**
+         * Constructs a new node with the specified element and children.
+         * @param x element of the node
+         * @param left left child of the node
+         * @param right right child of the node
+         */
         public Entry(T x, Entry<T> left, Entry<T> right) {
             this.element = x;
             this.left = left;
@@ -30,34 +37,8 @@ public class BinarySearchTree<T extends Comparable<? super T>>
     Entry<T> root;
     int size;
 
-    static class BSTIterator<T> implements Iterator<T> {
-
-        Stack<Entry<T>> stack = new Stack<>();
-
-        public BSTIterator(Entry<T> root) {
-            pushLeft(root);
-        }
-
-        public boolean hasNext() {
-            return !stack.isEmpty();
-        }
-
-        public T next() {
-            Entry<T> node = stack.pop();
-            pushLeft(node.right);
-            return node.element;
-        }
-
-        public void pushLeft(Entry<T> node) {
-            while (node != null) {
-                stack.push(node);
-                node = node.left;
-            }
-        }
-    }
-
     /**
-     * Create an empty binary search tree
+     * Constructs an empty binary search tree.
      */
     public BinarySearchTree() {
         root = null;
@@ -65,9 +46,9 @@ public class BinarySearchTree<T extends Comparable<? super T>>
     }
 
     /**
-     * Check if the tree contains the element x
+     * Checks if the tree contains the specified element.
      * @param x element to check
-     * @return true if the element is present in the tree, false otherwise
+     * @return true if the tree contains the element, false otherwise
      */
     public boolean contains(T x) {
         Entry<T> node = root;
@@ -84,33 +65,30 @@ public class BinarySearchTree<T extends Comparable<? super T>>
         return false;
     }
 
+    public Entry<T> createEntry(T x, Entry<T> left, Entry<T> right) {
+        return new Entry<>(x, left, right);
+    }
+
     /**
-     * Add x to tree. If tree contains x, do nothing
+     * Adds an element to the tree if not already present.
      * @param x element to add
-     * @return true if x is a new element added to the tree, false otherwise
+     * @return true if the element is added, false if it's already present
      */
     public boolean add(T x) {
         if (root == null) {
-            root = new Entry<>(x, null, null);
+            root = createEntry(x, null, null);
             size++;
             return true;
         }
-        Entry<T> node = root;
-        Entry<T> parent = null;
+        Entry<T> node = root, parent = null;
         int cmp = 0;
         while (node != null) {
             cmp = x.compareTo(node.element);
-            if (cmp == 0) {
-                return false;
-            } else if (cmp < 0) {
-                parent = node;
-                node = node.left;
-            } else {
-                parent = node;
-                node = node.right;
-            }
+            if (cmp == 0) return false;
+            parent = node;
+            node = (cmp < 0) ? node.left : node.right;
         }
-        Entry<T> newNode = new Entry<>(x, null, null);
+        Entry<T> newNode = createEntry(x, null, null);
         if (cmp < 0) {
             parent.left = newNode;
         } else {
@@ -121,48 +99,42 @@ public class BinarySearchTree<T extends Comparable<? super T>>
     }
 
     /**
-     * Remove x from tree. Return x if found, otherwise return null
+     * Removes an element from the tree if present.
      * @param x element to remove
-     * @return x if found, otherwise return null
+     * @return the removed element if found, otherwise null
      */
     public T remove(T x) {
-        Entry<T> node = root;
-        Entry<T> parent = null;
+        Entry<T> node = root, parent = null;
         while (node != null) {
             int cmp = x.compareTo(node.element);
             if (cmp == 0) {
                 T result = node.element;
                 if (node.left == null || node.right == null) {
-                    connectChild(node, parent);
+                    bypassNode(node, parent);
                 } else {
-                    Entry<T> minRight = node.right;
-                    Entry<T> minRightParent = node;
+                    Entry<T> minRight = node.right, minRightParent = node;
                     while (minRight.left != null) {
                         minRightParent = minRight;
                         minRight = minRight.left;
                     }
                     node.element = minRight.element;
-                    connectChild(minRight, minRightParent);
+                    bypassNode(minRight, minRightParent);
                 }
                 size--;
                 return result;
-            } else if (cmp < 0) {
-                parent = node;
-                node = node.left;
-            } else {
-                parent = node;
-                node = node.right;
             }
+            parent = node;
+            node = (cmp < 0) ? node.left : node.right;
         }
         return null;
     }
 
     /**
-     * Connect the child of the node to the parent
+     * Connects the child of a node to its parent.
      * @param node node to be removed
      * @param parent parent of the node to be removed
      */
-    public void connectChild(Entry<T> node, Entry<T> parent) {
+    public void bypassNode(Entry<T> node, Entry<T> parent) {
         Entry<T> child = (node.left != null) ? node.left : node.right;
         if (parent == null) {
             root = child;
@@ -173,171 +145,55 @@ public class BinarySearchTree<T extends Comparable<? super T>>
         }
     }
 
-    /**
-     * Return an iterator to the tree
-     * @return iterator to the tree
+    // Start of Optional problems
+
+    /** Optional problem : Iterate elements in sorted order of keys
+     Solve this problem without creating an array using in-order traversal (toArray()).
      */
     public Iterator<T> iterator() {
-        return new BSTIterator<>(root);
+        return null;
     }
 
-    /**
-     * Find the smallest element in the tree
-     * @return smallest element in the tree
-     */
+    // Optional problem
     public T min() {
-        if (root == null) {
-            return null;
-        }
-        Entry<T> node = root;
-        while (node.left != null) {
-            node = node.left;
-        }
-        return node.element;
+        return null;
     }
 
-    /**
-     * Find the largest element in the tree
-     * @return largest element in the tree
-     */
     public T max() {
-        if (root == null) {
-            return null;
-        }
-        Entry<T> node = root;
-        while (node.right != null) {
-            node = node.right;
-        }
-        return node.element;
+        return null;
     }
 
-    /**
-     * Find the largest element that is no larger than x
-     * @param x element to compare
-     * @return largest element that is no larger than x
-     */
+    // Optional problem.  Find largest key that is no bigger than x.  Return null if there is no such key.
     public T floor(T x) {
-        if (size == 0) {
-            return null;
-        }
-        Entry<T> node = root;
-        Entry<T> floor = null;
-        while (node != null) {
-            int cmp = x.compareTo(node.element);
-            if (cmp == 0) {
-                return node.element;
-            } else if (cmp < 0) {
-                node = node.left;
-            } else {
-                floor = node;
-                node = node.right;
-            }
-        }
-        return floor == null ? null : floor.element;
+        return null;
     }
 
-    /**
-     * Find the smallest element that is no smaller than x
-     * @param x element to compare
-     * @return smallest element that is no smaller than x
-     */
+    // Optional problem.  Find smallest key that is no smaller than x.  Return null if there is no such key.
     public T ceiling(T x) {
-        if (size == 0) {
-            return null;
-        }
-        Entry<T> node = root;
-        Entry<T> ceiling = null;
-        while (node != null) {
-            int cmp = x.compareTo(node.element);
-            if (cmp == 0) {
-                return node.element;
-            } else if (cmp < 0) {
-                ceiling = node;
-                node = node.left;
-            } else {
-                node = node.right;
-            }
-        }
-        return ceiling == null ? null : ceiling.element;
+        return null;
     }
 
-    /**
-     * Find the predecessor of x, if x is not in the tree, return floor(x)
-     * @param x element to compare
-     * @return predecessor of x
-     */
+    // Optional problem.  Find predecessor of x.  If x is not in the tree, return floor(x).  Return null if there is no such key.
     public T predecessor(T x) {
-        Entry<T> node = root;
-        Entry<T> predecessor = null;
-        while (node != null) {
-            int cmp = x.compareTo(node.element);
-            if (cmp == 0) {
-                if (node.left != null) {
-                    node = node.left;
-                    while (node.right != null) {
-                        node = node.right;
-                    }
-                    return node.element;
-                } else {
-                    return predecessor == null ? null : predecessor.element;
-                }
-            } else if (cmp > 0) {
-                predecessor = node;
-                node = node.right;
-            } else {
-                node = node.left;
-            }
-        }
-        return predecessor == null ? floor(x) : predecessor.element;
+        return null;
     }
 
-    /**
-     * Find the successor of x, if x is not in the tree, return ceiling(x)
-     * @param x element to compare
-     * @return successor of x
-     */
+    // Optional problem.  Find successor of x.  If x is not in the tree, return ceiling(x).  Return null if there is no such key.
     public T successor(T x) {
-        Entry<T> node = root;
-        Entry<T> successor = null;
-        while (node != null) {
-            int cmp = x.compareTo(node.element);
-            if (cmp == 0) {
-                if (node.right != null) {
-                    node = node.right;
-                    while (node.left != null) {
-                        node = node.left;
-                    }
-                    return node.element;
-                } else {
-                    return successor == null ? null : successor.element;
-                }
-            } else if (cmp < 0) {
-                successor = node;
-                node = node.left;
-            } else {
-                node = node.right;
-            }
-        }
-        return successor == null ? ceiling(x) : successor.element;
+        return null;
     }
 
-    /**
-     * Convert the tree to an array
-     * @return array representation of the tree
-     */
-    @SuppressWarnings("rawtypes")
+    // Optional: Create an array with the elements using in-order traversal of tree
     public Comparable[] toArray() {
         Comparable[] arr = new Comparable[size];
-        Iterator<T> it = iterator();
-        int i = 0;
-        while (it.hasNext()) {
-            arr[i++] = it.next();
-        }
+        /* write code to place elements in array here */
         return arr;
     }
 
+    // End of Optional problems
+
     /**
-     * Main method to test the BinarySearchTree class
+     * Main method to test the BinarySearchTree class.
      * @param args command line arguments
      * @throws FileNotFoundException if file not found
      */
@@ -372,52 +228,6 @@ public class BinarySearchTree<T extends Comparable<? super T>>
                     }
                     break;
                 }
-                case "Min": {
-                    Long min = bst.min();
-                    if (min != null) {
-                        result = (result + min) % modValue;
-                    }
-                    break;
-                }
-                case "Max": {
-                    Long max = bst.max();
-                    if (max != null) {
-                        result = (result + max) % modValue;
-                    }
-                    break;
-                }
-                case "Floor": {
-                    operand = sc.nextInt();
-                    Long floor = bst.floor(operand);
-                    if (floor != null) {
-                        result = (result + floor) % modValue;
-                    }
-                    break;
-                }
-                case "Ceiling": {
-                    operand = sc.nextInt();
-                    Long ceiling = bst.ceiling(operand);
-                    if (ceiling != null) {
-                        result = (result + ceiling) % modValue;
-                    }
-                    break;
-                }
-                case "Predecessor": {
-                    operand = sc.nextInt();
-                    Long predecessor = bst.predecessor(operand);
-                    if (predecessor != null) {
-                        result = (result + predecessor) % modValue;
-                    }
-                    break;
-                }
-                case "Successor": {
-                    operand = sc.nextInt();
-                    Long successor = bst.successor(operand);
-                    if (successor != null) {
-                        result = (result + successor) % modValue;
-                    }
-                    break;
-                }
                 case "Contains": {
                     operand = sc.nextInt();
                     if (bst.contains(operand)) {
@@ -428,20 +238,25 @@ public class BinarySearchTree<T extends Comparable<? super T>>
             }
         }
 
-        sc.close();
-
         timer.end();
-
+        sc.close();
         System.out.println(result);
         System.out.println(timer);
     }
 
+    /**
+     * Prints the tree in in-order sequence.
+     */
     public void printTree() {
         System.out.print("[" + size + "]");
         printTree(root);
         System.out.println();
     }
 
+    /**
+     * Helper method to print the tree in in-order sequence.
+     * @param node root of the tree
+     */
     void printTree(Entry<T> node) {
         if (node != null) {
             printTree(node.left);

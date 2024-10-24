@@ -1,14 +1,21 @@
-// replace package name with your netid
 package gxn210004;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-//Driver program for AVL tree implementation.
-
+/**
+ * Driver program to test AVL tree implementation.
+ * @author Giridhar Nair
+ */
 public class AVLTreeDriver {
 
+    /**
+     * Main method to test AVL tree implementation.
+     *
+     * @param args command line arguments
+     * @throws FileNotFoundException if the file is not found
+     */
     public static void main(String[] args) throws FileNotFoundException {
         Scanner sc;
         if (args.length > 0) {
@@ -23,7 +30,6 @@ public class AVLTreeDriver {
         long result = 0;
         boolean VERIFY = true;
         AVLTree<Long> avlTree = new AVLTree<>();
-        // Initialize the timer
         Timer timer = new Timer();
 
         while (!((operation = sc.next()).equals("End"))) {
@@ -32,9 +38,10 @@ public class AVLTreeDriver {
                     operand = sc.nextLong();
                     if (avlTree.add(operand)) {
                         result = (result + 1) % modValue;
-                        if (VERIFY && !avlTree.verify()) System.out.println(
-                            "Invalid AVL tree "
-                        );
+                        if (VERIFY && !avlTree.verify()) {
+                            System.out.println("Invalid AVL tree ");
+                            avlTree.printTree();
+                        }
                     }
                     break;
                 }
@@ -42,9 +49,7 @@ public class AVLTreeDriver {
                     operand = sc.nextLong();
                     if (avlTree.remove(operand) != null) {
                         result = (result + 1) % modValue;
-                        if (VERIFY && !avlTree.verify()) System.out.println(
-                            "Invalid AVL tree "
-                        );
+                        if (VERIFY && !avlTree.verify()) System.out.println("Invalid AVL tree ");
                     }
                     break;
                 }
@@ -59,8 +64,6 @@ public class AVLTreeDriver {
         }
 
         sc.close();
-
-        // End Time
         timer.end();
 
         System.out.println(result);

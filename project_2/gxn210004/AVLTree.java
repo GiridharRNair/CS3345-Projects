@@ -1,7 +1,6 @@
 package gxn210004;
 
-public class AVLTree<T extends Comparable<? super T>>
-    extends BinarySearchTree<T> {
+public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
 
     static class Entry<T> extends BinarySearchTree.Entry<T> {
 
@@ -9,7 +8,7 @@ public class AVLTree<T extends Comparable<? super T>>
 
         Entry(T x, Entry<T> left, Entry<T> right) {
             super(x, left, right);
-            height = 0; // Newly added nodes are initialized with height 0
+            height = 0;
         }
     }
 
@@ -17,149 +16,116 @@ public class AVLTree<T extends Comparable<? super T>>
         super();
     }
 
+    @Override
+    public Entry<T> createEntry(
+        T x,
+        BinarySearchTree.Entry<T> left,
+        BinarySearchTree.Entry<T> right
+    ) {
+        return new Entry<>(x, (Entry<T>) left, (Entry<T>) right);
+    }
+
     // TO DO
     @Override
     public boolean add(T x) {
-        root = add((Entry<T>) root, x);
-        return true;
+        if (super.add(x)) {
+            root = balanceTree((Entry<T>) root, x);
+            return true;
+        }
+        return false;
     }
 
-    private Entry<T> add(Entry<T> node, T x) {
-        if (node == null) {
-            return new Entry<>(x, null, null);
-        }
+    private Entry<T> balanceTree(Entry<T> node, T x) {
+        updateHeight(node);
+        int balance = getBalance(node);
 
-        int cmp = x.compareTo(node.element);
-        if (cmp < 0) {
-            node.left = add((Entry<T>) node.left, x);
-        } else if (cmp > 0) {
-            node.right = add((Entry<T>) node.right, x);
-        } else {
-            return node;
-        }
-
-        int leftHeight = (node.left == null)
-            ? -1
-            : ((Entry<T>) node.left).height;
-        int rightHeight = (node.right == null)
-            ? -1
-            : ((Entry<T>) node.right).height;
-        node.height = 1 + Math.max(leftHeight, rightHeight);
-
-        return balance(node);
-    }
-
-    private Entry<T> balance(Entry<T> node) {
-        int balanceFactor = getBalance(node);
-        if (balanceFactor > 1) {
-            if (getBalance((Entry<T>) node.left) >= 0) {
-                return rightRotate(node); // Left-Left case
+        if (balance > 1) {
+            if (x.compareTo(node.left.element) < 0) {
+                return rightRotate(node);
             } else {
-                node.left = leftRotate((Entry<T>) node.left); // Left-Right case
+                node.left = leftRotate((Entry<T>) node.left);
                 return rightRotate(node);
             }
         }
 
-        if (balanceFactor < -1) {
-            if (getBalance((Entry<T>) node.right) <= 0) {
-                return leftRotate(node); // Right-Right case
+        if (balance < -1) {
+            if (x.compareTo(node.right.element) > 0) {
+                return leftRotate(node);
             } else {
-                node.right = rightRotate((Entry<T>) node.right); // Right-Left case
+                node.right = rightRotate((Entry<T>) node.right);
                 return leftRotate(node);
             }
         }
 
-        return node; // Return balanced node
+        return node;
+    }
+
+    private void updateHeight(Entry<T> node) {
+        int leftHeight = (node.left == null) ? -1 : ((Entry<T>) node.left).height;
+        int rightHeight = (node.right == null) ? -1 : ((Entry<T>) node.right).height;
+        node.height = 1 + Math.max(leftHeight, rightHeight);
     }
 
     private int getBalance(Entry<T> node) {
-        if (node == null) return 0;
-        int leftHeight = (node.left == null)
-            ? -1
-            : ((Entry<T>) node.left).height;
-        int rightHeight = (node.right == null)
-            ? -1
-            : ((Entry<T>) node.right).height;
+        int leftHeight = (node.left == null) ? -1 : ((Entry<T>) node.left).height;
+        int rightHeight = (node.right == null) ? -1 : ((Entry<T>) node.right).height;
         return leftHeight - rightHeight;
     }
 
-    public Entry<T> rightRotate(Entry<T> y) {
-        Entry<T> x = (Entry<T>) y.left;
-        Entry<T> T2 = (Entry<T>) x.right;
+    private Entry<T> rightRotate(Entry<T> node) {
+        Entry<T> newRoot = (Entry<T>) node.left;
+        node.left = newRoot.right;
+        newRoot.right = node;
 
-        // Perform rotation
-        x.right = y;
-        y.left = T2;
+        updateHeight(node);
+        updateHeight(newRoot);
 
-        // Update heights
-        y.height = 1 +
-        Math.max(
-            (y.left == null) ? -1 : ((Entry<T>) y.left).height,
-            (y.right == null) ? -1 : ((Entry<T>) y.right).height
-        );
-        x.height = 1 +
-        Math.max(
-            (x.left == null) ? -1 : ((Entry<T>) x.left).height,
-            (x.right == null) ? -1 : ((Entry<T>) x.right).height
-        );
-
-        // Return new root
-        return x;
+        return newRoot;
     }
 
-    public Entry<T> leftRotate(Entry<T> x) {
-        Entry<T> y = (Entry<T>) x.right;
-        Entry<T> T2 = (Entry<T>) y.left;
+    private Entry<T> leftRotate(Entry<T> node) {
+        Entry<T> newRoot = (Entry<T>) node.right;
+        node.right = newRoot.left;
+        newRoot.left = node;
 
-        // Perform rotation
-        y.left = x;
-        x.right = T2;
+        updateHeight(node);
+        updateHeight(newRoot);
 
-        // Update heights
-        x.height = 1 +
-        Math.max(
-            (x.left == null) ? -1 : ((Entry<T>) x.left).height,
-            (x.right == null) ? -1 : ((Entry<T>) x.right).height
-        );
-        y.height = 1 +
-        Math.max(
-            (y.left == null) ? -1 : ((Entry<T>) y.left).height,
-            (y.right == null) ? -1 : ((Entry<T>) y.right).height
-        );
-
-        // Return new root
-        return y;
+        return newRoot;
     }
 
-    // Optional. Complete for extra credit
+    //Optional. Complete for extra credit
     @Override
     public T remove(T x) {
         return super.remove(x);
     }
 
-    // TO DO
+    /** TO DO
+     *	verify if the tree is a valid AVL tree, that satisfies
+     *	all conditions of BST, and the balancing conditions of AVL trees.
+     *	In addition, do not trust the height value stored at the nodes, and
+     *	heights of nodes have to be verified to be correct.  Make your code
+     *  as efficient as possible. HINT: Look at the bottom-up solution to verify BST
+     */
     boolean verify() {
-        return verifyAVLTree((Entry<T>) root) != -2;
+        return verifyAVLTree((Entry<T>) root, null, null) != -1;
     }
 
-    int verifyAVLTree(Entry<T> node) {
-        if (node == null) return -1;
+    int verifyAVLTree(Entry<T> node, T min, T max) {
+        if (node == null) return 0;
 
-        int leftHeight = verifyAVLTree((Entry<T>) node.left);
-        int rightHeight = verifyAVLTree((Entry<T>) node.right);
+        if (min != null && node.element.compareTo(min) <= 0) return -1;
+        if (max != null && node.element.compareTo(max) >= 0) return -1;
+
+        int leftHeight = verifyAVLTree((Entry<T>) node.left, min, node.element);
+        int rightHeight = verifyAVLTree((Entry<T>) node.right, node.element, max);
 
         if (leftHeight == -1 || rightHeight == -1) return -1;
 
         if (Math.abs(leftHeight - rightHeight) > 1) return -1;
 
-        if (
-            node.left != null && node.element.compareTo(node.left.element) < 0
-        ) return -1;
+        node.height = 1 + Math.max(leftHeight, rightHeight);
 
-        if (
-            node.right != null && node.element.compareTo(node.right.element) > 0
-        ) return -1;
-
-        return 1 + Math.max(leftHeight, rightHeight);
+        return node.height;
     }
 }
