@@ -43,14 +43,11 @@ Execution
 
 Test cases are provided in the `p2-testcases` directory. You can execute the tests as outlined below.
 
+I have deleted the testcases provided for the project, and only kept the ones I created, to save space when the project was compressed. 
+
 1. Running Binary Search Tree (BST) Tests
     Run these commands to test `BinarySearchTree` with the provided test cases:
         ```
-        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t01.txt
-        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t02.txt
-        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t03.txt
-        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t04-no-remove.txt
-        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t05-no-remove.txt
         java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t06.txt
         java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t07.txt
         java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t08.txt
@@ -59,11 +56,6 @@ Test cases are provided in the `p2-testcases` directory. You can execute the tes
 2. Running AVL Tree Tests
     Run these commands to test `AVLTreeDriver` with the provided test cases:
         ```
-        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t01.txt
-        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t02.txt
-        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t03.txt
-        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t04-no-remove.txt
-        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t05-no-remove.txt
         java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t06.txt
         java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t07.txt
         java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t08.txt
@@ -77,7 +69,7 @@ Test cases are provided in the `p2-testcases` directory. You can execute the tes
         ```
 
 4. Running all Testcases in `p2-testcases` Directory
-    Run this command to execute all test cases for `BinarySearchTree`:
+    Run this command to execute all test cases using `BinarySearchTree`:
         ```
         for i in $(ls gxn210004/p2-testcases/bst-t*.txt); do
             echo "Running $i"
@@ -85,7 +77,7 @@ Test cases are provided in the `p2-testcases` directory. You can execute the tes
         done
         ```
     
-    Run this command to execute all test cases for `AVLTreeDriver`:
+    Run this command to execute all test cases using `AVLTreeDriver`:
         ```
         for i in $(ls gxn210004/p2-testcases/bst-t*.txt); do
             echo "Running $i"
