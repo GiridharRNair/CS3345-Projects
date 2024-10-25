@@ -1,14 +1,14 @@
 package gxn210004;
 
 /**
- * AVL Tree implementation that extends BinarySearchTree.
+ * AVL Tree implementation extending BinarySearchTree.
+ * Balances itself to maintain O(log n) height after insertions and deletions.
  * @param <T> The type of elements stored in the tree.
- * @author Giridhar Nair
  */
 public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T> {
 
     /**
-     * Represents a node in the AVL tree with a height attribute.
+     * Node in AVL tree with a height attribute.
      * @param <T> Type of the element.
      */
     static class Entry<T> extends BinarySearchTree.Entry<T> {
@@ -17,9 +17,9 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 
         /**
          * Constructs an AVL tree node.
-         * @param x element of the node
-         * @param left left child
-         * @param right right child
+         * @param x Element of the node
+         * @param left Left child
+         * @param right Right child
          */
         Entry(T x, Entry<T> left, Entry<T> right) {
             super(x, left, right);
@@ -35,11 +35,11 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
     }
 
     /**
-     * Creates a new node with the class-specific type.
-     * @param x element of the node
-     * @param left left child of the node
-     * @param right right child of the node
-     * @return the new node
+     * Creates a new AVL tree node.
+     * @param x Element of the node
+     * @param left Left child
+     * @param right Right child
+     * @return The new node
      */
     @Override
     public Entry<T> createEntry(
@@ -51,58 +51,77 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
     }
 
     /**
-     * Adds an element and rebalances the tree if needed.
-     * @param x element to add
-     * @return true if the element was added, false if it already exists
+     * Adds an element, balancing the tree if necessary.
+     * @param x Element to add
+     * @return True if the element was added, false if it already exists
      */
     @Override
     public boolean add(T x) {
         if (super.add(x)) {
-            root = rebalance((Entry<T>) root);
+            find(x);
+            balanceTree();
             return true;
         }
         return false;
     }
 
     /**
-     * Rebalances the subtree rooted at the given node.
-     * @param node root of the subtree
-     * @return the new root after rebalancing
+     * Removes an element and rebalances the tree.
+     * @param x Element to remove
+     * @return The removed element or null if not found
      */
-    private Entry<T> rebalance(Entry<T> node) {
-        if (node == null) return null;
+    @Override
+    public T remove(T x) {
+        T result = super.remove(x);
+        if (result == null) return null;
+        balanceTree();
+        return result;
+    }
 
-        node.left = rebalance((Entry<T>) node.left);
-        node.right = rebalance((Entry<T>) node.right);
+    /**
+     * Balances the AVL tree from the node to the root.
+     */
+    private void balanceTree() {
+        while (!stack.isEmpty()) {
+            Entry<T> node = (Entry<T>) stack.pop();
+            updateHeight(node);
+            int balance = getBalance(node);
 
-        updateHeight(node);
-        int balance = getBalance(node);
+            if (balance > 1) {
+                if (getBalance((Entry<T>) node.left) >= 0) {
+                    node = rightRotate(node);
+                } else {
+                    node.left = leftRotate((Entry<T>) node.left);
+                    node = rightRotate(node);
+                }
+            }
 
-        if (balance > 1) {
-            if (getBalance((Entry<T>) node.left) >= 0) {
-                return rightRotate(node);
+            if (balance < -1) {
+                if (getBalance((Entry<T>) node.right) <= 0) {
+                    node = leftRotate(node);
+                } else {
+                    node.right = rightRotate((Entry<T>) node.right);
+                    node = leftRotate(node);
+                }
+            }
+
+            if (stack.isEmpty()) {
+                root = node;
             } else {
-                node.left = leftRotate((Entry<T>) node.left);
-                return rightRotate(node);
+                Entry<T> parent = (Entry<T>) stack.peek();
+                if (parent.element.compareTo(node.element) > 0) {
+                    parent.left = node;
+                } else {
+                    parent.right = node;
+                }
             }
         }
-
-        if (balance < -1) {
-            if (getBalance((Entry<T>) node.right) <= 0) {
-                return leftRotate(node);
-            } else {
-                node.right = rightRotate((Entry<T>) node.right);
-                return leftRotate(node);
-            }
-        }
-
-        return node;
     }
 
     /**
      * Gets the height of a node.
-     * @param node node to check
-     * @return height of the node
+     * @param node Node to check
+     * @return Height of the node
      */
     private int getHeight(Entry<T> node) {
         return (node == null) ? -1 : node.height;
@@ -110,7 +129,7 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
 
     /**
      * Updates the height of a node.
-     * @param node node to update
+     * @param node Node to update
      */
     private void updateHeight(Entry<T> node) {
         node.height = 1 +
@@ -118,93 +137,106 @@ public class AVLTree<T extends Comparable<? super T>> extends BinarySearchTree<T
     }
 
     /**
-     * Gets the balance factor of a node.
-     * @param node node to check
-     * @return balance factor of the node
+     * Calculates the balance factor of a node.
+     * @param node Node to check
+     * @return Balance factor of the node
      */
     private int getBalance(Entry<T> node) {
         return getHeight((Entry<T>) node.left) - getHeight((Entry<T>) node.right);
     }
 
     /**
-     * Rotates the subtree to the right.
-     * @param node root of the subtree
-     * @return new root after right rotation
+     * Performs a right rotation on the subtree.
+     * @param node Root of the subtree
+     * @return New root after rotation
      */
     private Entry<T> rightRotate(Entry<T> node) {
         Entry<T> newRoot = (Entry<T>) node.left;
-
         node.left = newRoot.right;
         newRoot.right = node;
-
         updateHeight(node);
         updateHeight(newRoot);
-
         return newRoot;
     }
 
     /**
-     * Rotates the subtree to the left.
-     * @param node root of the subtree
-     * @return new root after left rotation
+     * Performs a left rotation on the subtree.
+     * @param node Root of the subtree
+     * @return New root after rotation
      */
     private Entry<T> leftRotate(Entry<T> node) {
         Entry<T> newRoot = (Entry<T>) node.right;
-
         node.right = newRoot.left;
         newRoot.left = node;
-
         updateHeight(node);
         updateHeight(newRoot);
-
         return newRoot;
     }
 
     /**
-     * Removes an element and rebalances the tree.
-     * @param x element to remove
-     * @return the removed element or null if not found
+     * Helper object to store AVL verification details.
+     * Stores flag for validity, node height, and min/max values of subtree.
      */
-    @Override
-    public T remove(T x) {
-        T node = super.remove(x);
-        if (node != null) {
-            root = rebalance((Entry<T>) root);
-            return node;
+    class VerifyObject {
+
+        boolean flag;
+        int height;
+        T max;
+        T min;
+
+        /**
+         * Constructs a VerifyObject with verification status, height, min, and max values.
+         * @param flag verification flag (true if valid AVL subtree)
+         * @param height height of the subtree
+         * @param max maximum value in the subtree
+         * @param min minimum value in the subtree
+         */
+        VerifyObject(boolean flag, int height, T max, T min) {
+            this.flag = flag;
+            this.height = height;
+            this.max = max;
+            this.min = min;
         }
-        return null;
     }
 
     /**
-     * Verifies if the tree is a valid AVL tree.
-     * @return true if valid, false otherwise
+     * Verifies if the tree meets AVL properties.
+     * @return True if valid, false otherwise
      */
     boolean verify() {
-        return verifyAVLTree((Entry<T>) root, null, null) != -1;
+        if (size == 0) return true;
+        return verifyAVLTree((Entry<T>) root, null, null).flag;
     }
 
     /**
-     * Verifies if the tree is a valid AVL tree.
-     * @param node node to verify
-     * @param min minimum value of the node
-     * @param max maximum value of the node
-     * @return -1 if the tree is invalid, otherwise the height of the tree
+     * Verifies AVL properties for each node recursively.
+     * @param node Current node
+     * @param min Minimum allowed value for the node
+     * @param max Maximum allowed value for the node
+     * @return Verification status, height, min, and max values in a VerifyObject
      */
-    int verifyAVLTree(Entry<T> node, T min, T max) {
-        if (node == null) return 0;
+    private VerifyObject verifyAVLTree(Entry<T> node, T min, T max) {
+        if (node == null) {
+            return new VerifyObject(true, -1, null, null);
+        }
 
-        if (min != null && node.element.compareTo(min) <= 0) return -1;
-        if (max != null && node.element.compareTo(max) >= 0) return -1;
+        VerifyObject left = verifyAVLTree((Entry<T>) node.left, min, node.element);
+        VerifyObject right = verifyAVLTree((Entry<T>) node.right, node.element, max);
 
-        int leftHeight = verifyAVLTree((Entry<T>) node.left, min, node.element);
-        int rightHeight = verifyAVLTree((Entry<T>) node.right, node.element, max);
+        if (
+            !left.flag ||
+            !right.flag ||
+            (min != null && node.element.compareTo(min) <= 0) ||
+            (max != null && node.element.compareTo(max) >= 0) ||
+            Math.abs(left.height - right.height) > 1
+        ) {
+            return new VerifyObject(false, -1, null, null);
+        }
 
-        if (leftHeight == -1 || rightHeight == -1) return -1;
+        T minValue = (left.min != null) ? left.min : node.element;
+        T maxValue = (right.max != null) ? right.max : node.element;
+        int height = 1 + Math.max(left.height, right.height);
 
-        if (Math.abs(leftHeight - rightHeight) > 1) return -1;
-
-        node.height = 1 + Math.max(leftHeight, rightHeight);
-
-        return node.height;
+        return new VerifyObject(true, height, maxValue, minValue);
     }
 }

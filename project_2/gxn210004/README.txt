@@ -1,33 +1,94 @@
-Prerequisites:
+Project 2: Binary Search Tree (BST) and AVL Tree Implementation
 
-1. Ensure that Java is installed on your machine. You can check by running the following command in your terminal or command prompt:
-   java -version
+Course: CS 3345 - Data Structures and Algorithm Analysis  
+Project Due Date: 11:59 PM, Sunday, Oct 25, 2024  
 
-2. Make sure that `javac` (Java compiler) is also installed. You can check by running:
-   javac -version
+Prerequisites
 
-3. Navigate to the root directory where the extracted files are located before compiling and running the code.
+To compile and run this project, you need:
 
-Code Compilation:
+1. **Java Runtime Environment (JRE) and Java Development Kit (JDK)**.  
+    - Verify installation by running the following in your terminal:
+        ```
+        java -version
+        javac -version
+        ```
 
-1. Compile BinarySearchTree.java:
-   javac gxn210004/BinarySearchTree.java
+2. Project Setup
+    - Download and extract all project files.  
+    - Navigate to the directory a level above the `gxn210004` folder.
+        - For example, if your file structure is `folder1/folder2/gxn210004`, the root directory is the parent of `folder2`.
+        - You will run all the commands below from the directory above `gxn210004`.
 
-2. Compile AVLTreeDriver.java:
-   javac gxn210004/AVLTreeDriver.java
+Compilation (Although all Java files are compiled already)
 
-Code Execution:
+Compile the Java files as follows:
 
-1. To run all test cases for `BinarySearchTree`:
-   java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t01.txt
-   java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t02.txt
-   java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t03.txt
-   java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t04-no-remove.txt
-   java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t05-no-remove.txt
+    - To compile BinarySearchTree.java only:
+        ```
+        javac gxn210004/BinarySearchTree.java
+        ```
 
-2. To run all test cases for `AVLTreeDriver`:
-   java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t01.txt
-   java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t02.txt
-   java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t03.txt
-   java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t04-no-remove.txt
-   java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t05-no-remove.txt
+    - To compile AVLTreeDriver.java only:
+        ```
+        javac gxn210004/AVLTreeDriver.java
+        ```
+
+    - To compile all Java files:
+        ```
+        javac gxn210004/*.java
+        ```
+
+Execution
+
+Test cases are provided in the `p2-testcases` directory. You can execute the tests as outlined below.
+
+1. Running Binary Search Tree (BST) Tests
+    Run these commands to test `BinarySearchTree` with the provided test cases:
+        ```
+        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t01.txt
+        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t02.txt
+        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t03.txt
+        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t04-no-remove.txt
+        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t05-no-remove.txt
+        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t06.txt
+        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t07.txt
+        java gxn210004/BinarySearchTree gxn210004/p2-testcases/bst-t08.txt
+        ```
+
+2. **Running AVL Tree Tests**  
+    Run these commands to test `AVLTreeDriver` with the provided test cases:
+        ```
+        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t01.txt
+        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t02.txt
+        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t03.txt
+        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t04-no-remove.txt
+        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t05-no-remove.txt
+        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t06.txt
+        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t07.txt
+        java gxn210004/AVLTreeDriver gxn210004/p2-testcases/bst-t08.txt
+        ```
+
+3. **Running with Custom Input Files**  
+    You can also run the BST or AVL Tree programs with your custom input files:
+        ```
+        java gxn210004/AVLTreeDriver <input-file-path>
+        java gxn210004/BinarySearchTree <input-file-path>
+        ```
+
+4. **Running all Testcases in `p2-testcases` Directory**
+    Run this command to execute all test cases for `BinarySearchTree`:
+        ```
+        for i in $(ls gxn210004/p2-testcases/bst-t*.txt); do
+            echo "Running $i"
+            java gxn210004/BinarySearchTree $i
+        done
+        ```
+    
+    Run this command to execute all test cases for `AVLTreeDriver`:
+        ```
+        for i in $(ls gxn210004/p2-testcases/bst-t*.txt); do
+            echo "Running $i"
+            java gxn210004/AVLTreeDriver $i
+        done
+        ```

@@ -2,12 +2,12 @@ package gxn210004;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Scanner;
 
 /**
- * A binary search tree (BST) implementation
- * @author Giridhar Nair
+ * A binary search tree (BST) implementation.
  * @param <T> The type of elements stored in the tree.
  */
 public class BinarySearchTree<T extends Comparable<? super T>> implements Iterable<T> {
@@ -36,6 +36,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Iterab
 
     Entry<T> root;
     int size;
+    ArrayDeque<Entry<T>> stack;
 
     /**
      * Constructs an empty binary search tree.
@@ -43,6 +44,7 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Iterab
     public BinarySearchTree() {
         root = null;
         size = 0;
+        stack = new ArrayDeque<>();
     }
 
     /**
@@ -51,56 +53,47 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Iterab
      * @return true if the tree contains the element, false otherwise
      */
     public boolean contains(T x) {
-        Entry<T> node = root;
-        while (node != null) {
-            int cmp = x.compareTo(node.element);
-            if (cmp == 0) {
-                return true;
-            } else if (cmp < 0) {
-                node = node.left;
-            } else {
-                node = node.right;
-            }
-        }
-        return false;
+        Entry<T> node = find(x);
+        return node != null && node.element.equals(x);
     }
 
     /**
-     * Creates a new node with the class-specific type.
+     * Creates a new node with the specified element and children.
      * @param x element of the node
      * @param left left child of the node
      * @param right right child of the node
-     * @return the new node
+     * @return the newly created node
      */
     public Entry<T> createEntry(T x, Entry<T> left, Entry<T> right) {
         return new Entry<>(x, left, right);
     }
 
     /**
-     * Adds an element to the tree if not already present.
+     * Adds an element to the tree if it is not already present.
      * @param x element to add
      * @return true if the element is added, false if it's already present
      */
     public boolean add(T x) {
-        if (root == null) {
+        if (size == 0) {
             root = createEntry(x, null, null);
             size++;
             return true;
         }
-        Entry<T> node = root, parent = null;
-        int cmp = 0;
-        while (node != null) {
-            cmp = x.compareTo(node.element);
-            if (cmp == 0) return false;
-            parent = node;
-            node = (cmp < 0) ? node.left : node.right;
-        }
+
+        Entry<T> node = find(x);
+        if (node != null && node.element.equals(x)) return false;
+
         Entry<T> newNode = createEntry(x, null, null);
-        if (cmp < 0) {
-            parent.left = newNode;
-        } else {
-            parent.right = newNode;
+        Entry<T> parent = stack.isEmpty() ? null : stack.peek();
+
+        if (parent != null) {
+            if (x.compareTo(parent.element) < 0) {
+                parent.left = newNode;
+            } else {
+                parent.right = newNode;
+            }
         }
+
         size++;
         return true;
     }
@@ -111,45 +104,79 @@ public class BinarySearchTree<T extends Comparable<? super T>> implements Iterab
      * @return the removed element if found, otherwise null
      */
     public T remove(T x) {
-        Entry<T> node = root, parent = null;
-        while (node != null) {
-            int cmp = x.compareTo(node.element);
-            if (cmp == 0) {
-                T result = node.element;
-                if (node.left == null || node.right == null) {
-                    bypassNode(node, parent);
-                } else {
-                    Entry<T> minRight = node.right, minRightParent = node;
-                    while (minRight.left != null) {
-                        minRightParent = minRight;
-                        minRight = minRight.left;
-                    }
-                    node.element = minRight.element;
-                    bypassNode(minRight, minRightParent);
-                }
-                size--;
-                return result;
-            }
-            parent = node;
-            node = (cmp < 0) ? node.left : node.right;
+        if (size == 0) return null;
+
+        Entry<T> nodeToRemove = find(x);
+        if (nodeToRemove == null) return null;
+
+        if (nodeToRemove.left == null || nodeToRemove.right == null) {
+            splice(nodeToRemove);
+        } else {
+            stack.push(nodeToRemove);
+            Entry<T> successor = findMin(nodeToRemove.right);
+            nodeToRemove.element = successor.element;
+            splice(successor);
         }
-        return null;
+
+        size--;
+        return x;
     }
 
     /**
-     * Connects the child of a node to its parent.
-     * @param node node to be removed
-     * @param parent parent of the node to be removed
+     * Finds the minimum node in the subtree rooted at the given node.
+     * @param node the root of the subtree
+     * @return the minimum entry in the subtree
      */
-    public void bypassNode(Entry<T> node, Entry<T> parent) {
+    private Entry<T> findMin(Entry<T> node) {
+        while (node.left != null) {
+            stack.push(node);
+            node = node.left;
+        }
+
+        return node;
+    }
+
+    /**
+     * Splices the given node from the tree.
+     * @param node the node to splice
+     */
+    public void splice(Entry<T> node) {
+        Entry<T> parent = stack.isEmpty() ? null : stack.peek();
         Entry<T> child = (node.left != null) ? node.left : node.right;
-        if (parent == null) {
+
+        if (node == root) {
             root = child;
-        } else if (node == parent.left) {
+        } else if (parent.left == node) {
             parent.left = child;
         } else {
             parent.right = child;
         }
+    }
+
+    /**
+     * Finds the specified element in the tree.
+     * @param x element to find
+     * @return the node containing the element, or null if not found
+     */
+    public Entry<T> find(T x) {
+        stack.clear();
+        Entry<T> t = root;
+
+        while (t != null) {
+            int cmp = x.compareTo(t.element);
+
+            if (cmp < 0) {
+                stack.push(t);
+                t = t.left;
+            } else if (cmp > 0) {
+                stack.push(t);
+                t = t.right;
+            } else {
+                return t;
+            }
+        }
+
+        return null;
     }
 
     // Start of Optional problems

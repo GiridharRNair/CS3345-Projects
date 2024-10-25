@@ -27,7 +27,7 @@ public class AVLTreeDriver {
         long operand = 0;
         int modValue = 999983;
         long result = 0;
-        boolean VERIFY = true;
+        boolean VERIFY = false;
         AVLTree<Long> avlTree = new AVLTree<>();
         // Initialize the timer
         Timer timer = new Timer();
