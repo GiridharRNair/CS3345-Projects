@@ -1,4 +1,5 @@
-package gxn210004;
+package project_2;
+
 
 /** Timer class for roughly calculating running time of programs
  *  @author rbk

@@ -1,4 +1,4 @@
-package gxn210004;
+package project_1; // Change to your net id
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -364,6 +364,10 @@ public class Expression {
                 long eval = evaluateExpression(exp);
                 System.out.println("Postfix eval: " + pval + " Exp eval: " + eval + "\n");
             }
+
+            sscan.close();
         }
+
+        in.close();
     }
 }

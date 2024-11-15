@@ -1,4 +1,5 @@
-package gxn210004;
+package project_2;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;

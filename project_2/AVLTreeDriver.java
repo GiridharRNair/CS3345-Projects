@@ -1,4 +1,5 @@
-package gxn210004;
+package project_2;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,7 +28,7 @@ public class AVLTreeDriver {
         long operand = 0;
         int modValue = 999983;
         long result = 0;
-        boolean VERIFY = false;
+        boolean VERIFY = true;
         AVLTree<Long> avlTree = new AVLTree<>();
         // Initialize the timer
         Timer timer = new Timer();
