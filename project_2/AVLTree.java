@@ -1,6 +1,5 @@
 package project_2;
 
-
 /**
  * AVL Tree implementation extending BinarySearchTree.
  * Balances itself to maintain O(log n) height after insertions and deletions.
