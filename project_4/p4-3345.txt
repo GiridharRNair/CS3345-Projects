@@ -1,0 +1,49 @@
+CS 3345  Data structures and algorithm analysis
+Fall 2023
+Project 4: PERT
+
+Ver 1.0: Initial description.
+
+Due: 11:59 PM, Saturday, Dec 14.
+
+This is as an individual project. Do not share your work with others. 
+Do not use the code from any outside sources.
+ANY SUSPICION OF PLAGIARISM WILL BE REPORTED to OCSC.
+
+
+Project Description
+
+Implement the PERT algorithm discussed in class.  Starter code (PERT.java) provided.
+Implement all the methods in the starter code. Write additional methods if needed.
+Driver code (P4Driver) and test cases are all also provided. (See project 4 folder in the shared box folder.)
+
+Do not change the name of the class.  
+Do not modify Graph class other than changing the netid.
+Do not change the signatures of public methods in the starter code.
+If you need additional classes, define them as nested classes of PERT.
+
+You must write the DFS-based algorithm for finding a topological order.
+
+Your code should be well structured and commented properly. Please follow format specified in Javadoc. 
+
+Follow the submission below. 
+IF YOU DID NOT FOLLOW THE SUBMISSION PROCEDURE, 10 POINTS WILL BE DEDUCTED 
+
+Submission procedure:
+
+* Create a folder whose name is your netid (Nid). The name should be in lower case. 
+* Place PERT.java, and Graph.java in that folder. 
+* Use "package Nid;" in all your java files. Nid should be in lower case
+* package name and folder name should exactly match
+* Zip the contents into a single zip file.
+* If the zip file is bigger than 1 MB, you have included unnecessary files.
+* Delete them and create the zip file again.
+* Upload the zip file on elearning. 
+* Submission can be revised before the deadline. 
+* The final submission before the deadline will be graded.
+
+Rubric:
+	Code review: 50 points
+	Test cases: 40 points
+	Style: 10 points
+	
